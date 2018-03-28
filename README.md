@@ -82,6 +82,7 @@ was also used and linked by [coldKnight](https://github.com/coldKnight/TrafficLi
 After training with the above data set, we were able to get a training/validation accuracy of 99.7%. Here are the real world images that are classified with the real world classifier.
 
 RED signal
+
  ![red_signal](imgs/left0140.jpg)
 
  ('boxes: ', array([ 0.34669355,  0.37990823,  0.44469395,  0.40932181], dtype=float32))
@@ -89,6 +90,7 @@ RED signal
 ('classes: ', 1.0)
 
 ORANGE signal
+
 ![orange_signal](imgs/left0701.jpg)
 
 ('boxes: ', array([ 0.32945099,  0.18226181,  0.48397604,  0.23650797], dtype=float32))
@@ -96,6 +98,7 @@ ORANGE signal
 ('classes: ', 2.0)
 
 GREEN signal
+
 ![green_signal](imgs/left0000.jpg)
 
 ('boxes: ', array([ 0.38375774,  0.48111987,  0.42682913,  0.49595064], dtype=float32))
