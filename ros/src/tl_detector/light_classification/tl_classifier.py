@@ -16,7 +16,7 @@ class TLClassifier(object):
 
         self.gen_train_data = rospy.get_param("~gen_train_data", default=False)
         self.use_real_world_classifier = rospy.get_param("~real_world_classifier", default=False)
-        
+
         if self.gen_train_data:
             self.num_files = 0
             rospack = rospkg.RosPack()
@@ -113,4 +113,3 @@ class TLClassifier(object):
             if classes[0][0] in [1, 2, 3]:
                 return classes[0][0] - 1
         return -1
-

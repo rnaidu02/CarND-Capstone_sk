@@ -5,13 +5,13 @@ This is the project repo for the final project of the Udacity Self-Driving Car N
  * Stephan Meyer
  * Ashok Singhal
  * Marcin Mirosław
- * Ramesh Chukka 
+ * Ramesh Chukka
  * Renwei Wang
- 
+
 ### Installing our solution
- 
+
  This code is build with python 2.7.12. Please make sure you use this python version when installing the project.
- 
+
  1. Check out this repository
  2. in the root folder run `pip install -r requirements.txt` to install
    the necessary packages.
@@ -28,21 +28,23 @@ Besides calculating the next waypoints to come, it's important to keep the effic
  Simply deep copying the waypoint nodes is way to slow for a 50Hz broad cast. To overcome this issue we use
  a separte list which is filled once initially and is updated every time another car position is received
  and the next way point is behind the car.
- This way we only need to adjust the front and the end of the waypoint queue, which speeds up calculation 
+ This way we only need to adjust the front and the end of the waypoint queue, which speeds up calculation
  significantly.
- 
-Furthermore the the plan made must be adjusted, once a red traffic light is detected. If a traffic light 
+
+ ![car_with_waypoints](imgs/run_car2.png)
+
+Furthermore the the plan made must be adjusted, once a red traffic light is detected. If a traffic light
 is detected as red, the plan made so far is thrown away and another plan is calculated to gradually stop
-the car at the stop lane. 
+the car at the stop lane.
 The velocity is linearly reduced to reach 0 at the stop lane in front of the traffic
 light.
-For this we plan as many steps ahead of the car as are defined by an parameter 
+For this we plan as many steps ahead of the car as are defined by an parameter
 and never change the values anymore unless the state of the traffic light changes.
 When the traffic light switches to green again, the stopping plan must again be overwritten with the
 plan to follow the waypoints.
 
-The plan is implemented to be computed linearly. This means we first compute a plan without including the 
-traffic lights and then apply a traffic light "filter" to the values in order to change them if a traffic 
+The plan is implemented to be computed linearly. This means we first compute a plan without including the
+traffic lights and then apply a traffic light "filter" to the values in order to change them if a traffic
 light was detected. This way the code stays linearly and other obstackles may be implemented in future
 projects.
 
@@ -63,18 +65,37 @@ that this architecture is both light weight and robust to predict the traffic li
 Therefore this model is also checked in to this repository.
 
 #### Real World traffic light detector
-For the real world traffic light detector we used the 
-[object detection API](https://github.com/tensorflow/models/tree/master/research/object_detection) to 
-not start from scratch. We chose the mobile net detector because it is very light weight and therefore
+For the real world traffic light detector we used the
+[object detection API](https://github.com/tensorflow/models/tree/master/research/object_detection) to
+not start from scratch. We chose the MobileNet v1 detector because it is very light weight and therefore
 fast during inference. Also it is currently one of the few classifiers that work with tensorflow 1.5.0
 of the object detection API and tensorflow 1.3.0 of the car.
 The architecture of the net is:
 ![rw_architecture](ros/src/tl_detector/rw_model.png)
-This general approach, was very well described by [Antony Sarkis](https://medium.com/@anthony_sarkis) 
+
+This general approach, was very well described by [Antony Sarkis](https://medium.com/@anthony_sarkis)
 who created very nice blog posts about this issue.
 The detector was pretrained on COCO dataset with 90 classes and fine tuned on a dataset made out of images
 from the track: [dataset](https://drive.google.com/file/d/0B-Eiyn-CUQtxdUZWMkFfQzdObUE/view) This dataset
-was also used and linked by [coldKnight](https://github.com/coldKnight/TrafficLight_Detection-TensorFlowAPI). 
+was also used and linked by [coldKnight](https://github.com/coldKnight/TrafficLight_Detection-TensorFlowAPI).
+
+After training with the above data set, we were able to get a training/validation accuracy of 99.7%. Here are the real world images that are classified with the real world classifier.
+
+ ![red_signal](imgs/left0140.jpg)
+ ('boxes: ', array([ 0.34669355,  0.37990823,  0.44469395,  0.40932181], dtype=float32))
+('scores: ', 0.99921429)
+('classes: ', 1.0)
+
+![orange_signal](imgs/left0701.jpg)
+('boxes: ', array([ 0.32945099,  0.18226181,  0.48397604,  0.23650797], dtype=float32))
+('scores: ', 0.9009552)
+('classes: ', 2.0)
+
+![green_signal](imgs/left0000.jpg)
+('boxes: ', array([ 0.38375774,  0.48111987,  0.42682913,  0.49595064], dtype=float32))
+('scores: ', 0.95315224)
+('classes: ', 3.0)
+
 
 ### The controllers
 

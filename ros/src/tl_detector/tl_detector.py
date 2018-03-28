@@ -56,6 +56,8 @@ class TLDetector(object):
                                                Subscriber("/current_pose", PoseStamped)], 30, 0.1)
         self.tss.registerCallback(self.light_image_pose_cb)
 
+        rospy.loginfo("After light_image_pose_cb cb call")
+
         rospy.spin()
 
     def waypoints_cb(self, waypoints):
@@ -101,8 +103,9 @@ class TLDetector(object):
         self.lights = traffic_lights_msg.lights
         self.camera_image = image_msg
 
+        rospy.loginfo("Inside light_image_pose_cb")
         light_wp, state = self.process_traffic_lights()
-
+        rospy.loginfo("After process_traffic_lights call")
         '''
         Publish upcoming red lights at camera frequency.
         Each predicted state has to occur `STATE_COUNT_THRESHOLD` number
@@ -148,7 +151,7 @@ class TLDetector(object):
     # TODO: move into common package (might cool to create a map-class: map = Map(waypoints), map.get_waypoint_distance(..))
     def get_waypoint_distance(self, wp_idx1, wp_idx2):
         """
-        Calculates the the shortest distance between wp1 and wp2. Distance is measured as accumulated distance between the waypoints 
+        Calculates the the shortest distance between wp1 and wp2. Distance is measured as accumulated distance between the waypoints
         traversing from wp1 to wp2. This assumes the waypoints form a closed loop. If the distance is negative, wp_idx2 is behind wp_idx1.
 
          Args:
@@ -170,25 +173,25 @@ class TLDetector(object):
             idx_dist += len(self.waypoints.waypoints)
         elif idx_dist > len(self.waypoints.waypoints) / 2:
             idx_dist += -len(self.waypoints.waypoints)
-        
+
         # the direction (forward vs. backwards)
         dir = np.sign(idx_dist)
         if dir < 0:
             wp_idx1, wp_idx2 = wp_idx2, wp_idx1
-        
+
         idx = wp_idx1
         while idx != wp_idx2:
             p1 = self.waypoints.waypoints[idx].pose.pose.position
             p2 = self.waypoints.waypoints[(idx+1) % len(self.waypoints.waypoints)].pose.pose.position
             dist = np.sqrt((p2.x - p1.x)**2 + (p2.y - p1.y)**2)
             distance += dist
-            
+
             idx += 1
             if idx >= len(self.waypoints.waypoints):
                 idx = 0
 
         return distance * dir
-    
+
     def get_light_state(self, light):
         """Determines the current color of the traffic light
 
@@ -230,7 +233,7 @@ class TLDetector(object):
             tl_stop_line_pose = Pose()
             tl_stop_line_pose.position.x = self.config['stop_line_positions'][idx][0]
             tl_stop_line_pose.position.y = self.config['stop_line_positions'][idx][1]
-            
+
             # find closest wp to stop-line
             tl_stop_line_wp_idx = self.get_closest_waypoint_idx(tl_stop_line_pose)
             distance_to_car     = self.get_waypoint_distance(car_closest_wp_idx, tl_stop_line_wp_idx)
@@ -245,7 +248,7 @@ class TLDetector(object):
                 'stop_line_wp_idx': tl_stop_line_wp_idx,
                 'distance': distance_to_car,
                 'state': None
-            } 
+            }
             relevant_lights.append(tl)
 
         # check if we have any relevant TLs ahead
